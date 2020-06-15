@@ -10,6 +10,13 @@
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="ProjectId" id="1dJhJiDbfRBWKMMrxN6KvhehFLb" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -20,8 +27,18 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/utils" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\py_directory\PycharmProjects\django_blog_1\home\blog\utils" />
+      <recent name="D:\py_directory\PycharmProjects\django_blog_1\home\blog\libs" />
+      <recent name="D:\py_directory\PycharmProjects\django_blog_1\home\blog" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\py_directory\PycharmProjects\django_blog_1\home\blog\templates" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="blog" type="Python.DjangoServer" factoryName="Django server">
@@ -71,7 +88,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1592149032529</updated>
-      <workItem from="1592149034111" duration="897000" />
+      <workItem from="1592149034111" duration="2406000" />
+      <workItem from="1592235963401" duration="732000" />
     </task>
     <servers />
   </component>
@@ -83,22 +101,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="738" y="267" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1592149073998" />
-    <state width="1860" height="253" key="GridCell.Tab.0.bottom" timestamp="1592149992752">
+    <state width="1860" height="253" key="GridCell.Tab.0.bottom" timestamp="1592236794465">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1860" height="253" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1592149992752" />
-    <state width="1860" height="253" key="GridCell.Tab.0.center" timestamp="1592149992752">
+    <state width="1860" height="253" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1592236794465" />
+    <state width="1860" height="253" key="GridCell.Tab.0.center" timestamp="1592236794465">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1860" height="253" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1592149992752" />
-    <state width="1860" height="253" key="GridCell.Tab.0.left" timestamp="1592149992752">
+    <state width="1860" height="253" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1592236794465" />
+    <state width="1860" height="253" key="GridCell.Tab.0.left" timestamp="1592236794465">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1860" height="253" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1592149992752" />
-    <state width="1860" height="253" key="GridCell.Tab.0.right" timestamp="1592149992752">
+    <state width="1860" height="253" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1592236794465" />
+    <state width="1860" height="253" key="GridCell.Tab.0.right" timestamp="1592236794465">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1860" height="253" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1592149992752" />
+    <state width="1860" height="253" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1592236794465" />
     <state x="459" y="154" key="SettingsEditor" timestamp="1592149088264">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
