@@ -8,9 +8,11 @@ from django.shortcuts import render
 # Create your views here.
 from django.views import View
 from django_redis import get_redis_connection
+from pymysql import DatabaseError
 
 from libs.captcha.captcha import captcha
 from libs.yuntongxun.sms import CCP
+from users.models import User
 from utils.response_code import RETCODE
 
 logger = logging.getLogger('django')
@@ -24,6 +26,39 @@ class RegisterView(View):
         提供注册界面
         """
         return render(request, 'register.html')
+
+    def post(self, request):
+        mobile = request.POST.get('mobile')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        sms_code = request.POST.get('sms_code')
+
+        if not all([mobile,password,password2,sms_code]):
+            return HttpResponseBadRequest('缺少必要参数')
+
+        if not re.search(r'1[3-9]\d{9}$', mobile):
+            return HttpResponseBadRequest('手机号码格式错误')
+
+        if not re.search(r'[0-9a-zA-Z]{8,20}$', password):
+            return HttpResponseBadRequest('请输入8-20位的密码')
+
+        if password != password2:
+            return HttpResponseBadRequest('两次密码不一样')
+
+        redis_conn = get_redis_connection('default')
+        sms_code_server = redis_conn.get(f'sms:{mobile}')
+        if sms_code_server is None:
+            return HttpResponseBadRequest('短信验证码已过期')
+        sms_code_server = sms_code_server.decode()
+        if sms_code.lower() != sms_code_server.lower():
+            return HttpResponseBadRequest('短信验证码输入错误')
+        try:
+            user = User.objects.create_user(username=mobile, mobile=mobile, password=password)
+        except DatabaseError:
+            return HttpResponseBadRequest('注册失败')
+
+        return HttpResponse('注册成功，重定向到首页')
+
 
 
 class ImageCodeView(View):
