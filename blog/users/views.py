@@ -2,10 +2,12 @@ import re
 import logging
 from random import randint
 
+from django.contrib.auth import login, authenticate, logout
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.urls import reverse
 from django.views import View
 from django_redis import get_redis_connection
 from pymysql import DatabaseError
@@ -57,8 +59,11 @@ class RegisterView(View):
         except DatabaseError:
             return HttpResponseBadRequest('注册失败')
 
-        return HttpResponse('注册成功，重定向到首页')
-
+        login(request, user)
+        response = redirect(reverse('home:index'))
+        response.set_cookie('is_login', True)
+        response.set_cookie('username', user.username, max_age=30*24*3600)
+        return response
 
 
 class ImageCodeView(View):
@@ -102,3 +107,97 @@ class SmsCodeView(View):
         redis_conn.setex(f'sms:{mobile}', 300, sms_code)
         CCP().send_template_sms(mobile, [sms_code, 5], 1)
         return JsonResponse({'code': RETCODE.OK, 'errmsg': '发送短信成功'})
+
+
+class LoginView(View):
+    """用户登录"""
+
+    def get(self, request):
+        return render(request, 'login.html')
+
+    def post(self, request):
+        mobile = request.POST.get('mobile')
+        password = request.POST.get('password')
+        remember = request.POST.get('remember')
+
+        if not all([mobile,password]):
+            return HttpResponseBadRequest('缺少必传参数')
+
+        if not re.search(r'1[3-9]\d{9}$', mobile):
+            return HttpResponseBadRequest('手机号码格式错误')
+
+        if not re.search(r'[0-9a-zA-Z]{8,20}$', password):
+            return HttpResponseBadRequest('请输入8-20位的密码')
+
+        user = authenticate(mobile=mobile, password=password)
+
+        if user is None:
+            return HttpResponseBadRequest('用户名或密码错误')
+
+        login(request, user)
+        response = redirect(reverse('home:index'))
+        if remember != 'on':
+            request.session.set_expiry(0)
+            response.set_cookie('is_login', True)
+            response.set_cookie('username', user.username, max_age=30*24*3600)
+        else:
+            request.session.set_expiry(None)
+            response.set_cookie('is_login', True, max_age=14*24*3600)
+            response.set_cookie('username', user.username, max_age=30 * 24 * 3600)
+        return response
+
+
+class LogoutView(View):
+    """退出登录"""
+
+    def get(self, request):
+        logout(request)
+        response = redirect(reverse('home:index'))
+        response.delete_cookie('is_login')
+        return response
+
+
+class ForgetPasswordView(View):
+    """忘记密码"""
+
+    def get(self, request):
+        return render(request, 'forget_password.html')
+
+    def post(self, request):
+        mobile = request.POST.get('mobile')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        sms_code = request.POST.get('sms_code')
+
+        if not all([mobile,password]):
+            return HttpResponseBadRequest('缺少必传参数')
+
+        if not re.search(r'1[3-9]\d{9}$', mobile):
+            return HttpResponseBadRequest('手机号码格式错误')
+
+        if not re.search(r'[0-9a-zA-Z]{8,20}$', password):
+            return HttpResponseBadRequest('请输入8-20位的密码')
+
+        if password != password2:
+            return HttpResponseBadRequest('两次密码不一样')
+
+        redis_conn = get_redis_connection('default')
+        sms_code_server = redis_conn.get(f'sms:{mobile}')
+
+        if sms_code_server is None:
+            return HttpResponseBadRequest('手机验证码已过期')
+        sms_code_server = sms_code_server.decode('utf-8')
+        if sms_code.lower() != sms_code_server.lower():
+            return HttpResponseBadRequest('验证码输入错误')
+        try:
+            user = User.objects.get(mobile=mobile)
+        except User.DoesNotExist:
+            try:
+                User.objects.create_user(username=mobile, mobile=mobile, password=password)
+            except:
+                return HttpResponseBadRequest("修改失败，请稍后重试")
+        else:
+            user.set_password(password)
+            user.save()
+        response = redirect(reverse('home:index'))
+        return response
