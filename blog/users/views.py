@@ -3,6 +3,7 @@ import logging
 from random import randint
 
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
 
@@ -119,6 +120,7 @@ class LoginView(View):
         mobile = request.POST.get('mobile')
         password = request.POST.get('password')
         remember = request.POST.get('remember')
+        next = request.POST.get('next')
 
         if not all([mobile,password]):
             return HttpResponseBadRequest('缺少必传参数')
@@ -135,7 +137,10 @@ class LoginView(View):
             return HttpResponseBadRequest('用户名或密码错误')
 
         login(request, user)
-        response = redirect(reverse('home:index'))
+        if next:
+            response = redirect(next)
+        else:
+            response = redirect(reverse('home:index'))
         if remember != 'on':
             request.session.set_expiry(0)
             response.set_cookie('is_login', True)
@@ -201,3 +206,45 @@ class ForgetPasswordView(View):
             user.save()
         response = redirect(reverse('home:index'))
         return response
+
+
+class UserCenterView(LoginRequiredMixin,View):
+    """用户中心"""
+
+    def get(self, request):
+        user = request.user
+        context = {
+            'username': user.username,
+            'user_desc': user.user_desc,
+            'avatar': user.avatar.url if user.avatar else None,
+            'mobile': user.mobile
+        }
+        return render(request, 'center.html', context=context)
+
+    def post(self, request):
+        username = request.POST.get('username')
+        avatar = request.FILES.get('avatar')
+        user_desc = request.POST.get('desc')
+
+        user = request.user
+
+        try:
+            user.username = username
+            user.user_desc = user_desc
+            if avatar:
+                user.avatar = avatar
+            user.save()
+        except Exception as e:
+            logger.error(e)
+            return HttpResponseBadRequest('更新失败，请稍后重试')
+
+        response = redirect(reverse('users:center'))
+        response.set_cookie('username', user.username, max_age=30*24*3600)
+        return response
+
+
+class WriteBlogView(View):
+
+    def get(self, request):
+
+        return render(request, 'write_blog.html')
